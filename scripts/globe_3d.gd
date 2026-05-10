@@ -262,8 +262,8 @@ func _build_forests(tree_points: Array) -> void:
 	for i in range(tree_points.size()):
 		var item = tree_points[i]
 		var normal: Vector3 = item["normal"]
-		var basis = _basis_from_normal(normal, float(i) * 1.618).scaled(Vector3.ONE * 0.65)
-		mm.set_instance_transform(i, Transform3D(basis, item["pos"]))
+		var tree_basis = _basis_from_normal(normal, float(i) * 1.618).scaled(Vector3.ONE * 0.65)
+		mm.set_instance_transform(i, Transform3D(tree_basis, item["pos"]))
 	forest_multimesh.multimesh = mm
 	globe_mesh.add_child(forest_multimesh)
 
@@ -276,8 +276,8 @@ func _build_mountains(mountain_points: Array) -> void:
 	for i in range(mountain_points.size()):
 		var item = mountain_points[i]
 		var normal: Vector3 = item["normal"]
-		var basis = _basis_from_normal(normal, float(i) * 0.77)
-		mm.set_instance_transform(i, Transform3D(basis, item["pos"]))
+		var mountain_basis = _basis_from_normal(normal, float(i) * 0.77)
+		mm.set_instance_transform(i, Transform3D(mountain_basis, item["pos"]))
 	mountain_multimesh.multimesh = mm
 	globe_mesh.add_child(mountain_multimesh)
 
@@ -720,8 +720,8 @@ func _update_city_lights(country_id: int, era: int, technology: float, economy: 
 	var positions = _country_light_positions(country_id, visible_light_count)
 	var brightness = 0.45 if collapsing else 1.0
 	for i in range(visible_light_count):
-		var basis = Basis().scaled(Vector3.ONE * (0.75 + float(i % 3) * 0.12) * brightness)
-		mmesh.set_instance_transform(i, Transform3D(basis, positions[i]))
+		var light_basis = Basis().scaled(Vector3.ONE * (0.75 + float(i % 3) * 0.12) * brightness)
+		mmesh.set_instance_transform(i, Transform3D(light_basis, positions[i]))
 	lights.visible = true
 
 func _country_light_positions(country_id: int, count: int) -> Array:
