@@ -1,0 +1,122 @@
+[
+  {
+	"id": 1,
+	"name": "Valdoria",
+	"population": 85.0,
+	"economy": 72,
+	"technology": 65,
+	"military": 55,
+	"stability": 78,
+	"ideology": "democracy",
+	"era": 3,
+	"relations": { "2": 40, "3": -10, "4": 60, "5": 20, "6": -30, "7": 50, "8": 10, "9": 30, "10": -5 }
+  },
+  {
+	"id": 2,
+	"name": "Kharuum",
+	"population": 120.0,
+	"economy": 45,
+	"technology": 38,
+	"military": 80,
+	"stability": 35,
+	"ideology": "autocracy",
+	"era": 2,
+	"relations": { "1": 40, "3": -60, "4": -20, "5": 15, "6": 70, "7": -40, "8": 25, "9": -10, "10": 5 }
+  },
+  {
+	"id": 3,
+	"name": "Sylveth",
+	"population": 42.0,
+	"economy": 88,
+	"technology": 91,
+	"military": 30,
+	"stability": 90,
+	"ideology": "democracy",
+	"era": 3,
+	"relations": { "1": -10, "2": -60, "4": 55, "5": 70, "6": -80, "7": 40, "8": 60, "9": 45, "10": 30 }
+  },
+  {
+	"id": 4,
+	"name": "Dorrakan",
+	"population": 200.0,
+	"economy": 55,
+	"technology": 50,
+	"military": 70,
+	"stability": 50,
+	"ideology": "autocracy",
+	"era": 3,
+	"relations": { "1": 60, "2": -20, "3": 55, "5": -30, "6": 10, "7": 20, "8": -15, "9": 40, "10": 5 }
+  },
+  {
+	"id": 5,
+	"name": "Aeloria",
+	"population": 30.0,
+	"economy": 60,
+	"technology": 55,
+	"military": 25,
+	"stability": 82,
+	"ideology": "theocracy",
+	"era": 2,
+	"relations": { "1": 20, "2": 15, "3": 70, "4": -30, "6": -50, "7": 80, "8": 40, "9": 55, "10": 20 }
+  },
+  {
+	"id": 6,
+	"name": "Vrexmoor",
+	"population": 95.0,
+	"economy": 30,
+	"technology": 22,
+	"military": 90,
+	"stability": 20,
+	"ideology": "anarchy",
+	"era": 1,
+	"relations": { "1": -30, "2": 70, "3": -80, "4": 10, "5": -50, "7": -60, "8": -20, "9": -40, "10": 30 }
+  },
+  {
+	"id": 7,
+	"name": "Thessomar",
+	"population": 60.0,
+	"economy": 68,
+	"technology": 72,
+	"military": 40,
+	"stability": 75,
+	"ideology": "democracy",
+	"era": 3,
+	"relations": { "1": 50, "2": -40, "3": 40, "4": 20, "5": 80, "6": -60, "8": 55, "9": 30, "10": 45 }
+  },
+  {
+	"id": 8,
+	"name": "Korrath",
+	"population": 150.0,
+	"economy": 50,
+	"technology": 44,
+	"military": 65,
+	"stability": 45,
+	"ideology": "autocracy",
+	"era": 2,
+	"relations": { "1": 10, "2": 25, "3": 60, "4": -15, "5": 40, "6": -20, "7": 55, "9": 20, "10": -10 }
+  },
+  {
+	"id": 9,
+	"name": "Lunaris",
+	"population": 25.0,
+	"economy": 75,
+	"technology": 80,
+	"military": 20,
+	"stability": 88,
+	"ideology": "democracy",
+	"era": 3,
+	"relations": { "1": 30, "2": -10, "3": 45, "4": 40, "5": 55, "6": -40, "7": 30, "8": 20, "10": 60 }
+  },
+  {
+	"id": 10,
+	"name": "Zethara",
+	"population": 75.0,
+	"economy": 40,
+	"technology": 35,
+	"military": 55,
+	"stability": 40,
+	"ideology": "theocracy",
+	"era": 2,
+	"relations": { "1": -5, "2": 5, "3": 30, "4": 5, "5": 20, "6": 30, "7": 45, "8": -10, "9": 60 }
+  }
+]

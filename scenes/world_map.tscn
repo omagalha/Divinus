@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bysnuw616pxm6"]
+
+[ext_resource type="Script" uid="uid://o5wg2v53clpi" path="res://scripts/world_map.gd" id="1_oru6e"]
+
+[node name="WorldMap" type="Node" unique_id=1986984229]
+script = ExtResource("1_oru6e")

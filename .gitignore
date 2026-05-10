@@ -1,0 +1,14 @@
+# Godot — arquivos gerados automaticamente (não precisam ir pro Git)
+.godot/
+*.uid
+
+# Exportações
+export/
+*.apk
+*.aab
+*.ipa
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini

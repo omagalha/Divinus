@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Thales Magalhães/.claude/projects/c--Users-Thales-Magalh-es-OneDrive-Desktop-Divinus-Divinus/memory/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Thales Magalhães\\.claude\\projects\\c--Users-Thales-Magalh-es-OneDrive-Desktop-Divinus-Divinus\\memory"
+    ]
+  }
+}
