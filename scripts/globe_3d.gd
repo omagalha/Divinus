@@ -29,12 +29,22 @@ const COUNTRY_POSITIONS = {
 	10: {"lat": 10.0,  "lon": 80.0},   # Zethara
 }
 
+const CONTINENT_ANCHORS = [
+	{"lat": 48.0, "lon": 10.0, "radius": 0.74, "uplift": 0.078},
+	{"lat": 18.0, "lon": 58.0, "radius": 0.82, "uplift": 0.086},
+	{"lat": -18.0, "lon": -62.0, "radius": 0.86, "uplift": 0.088},
+	{"lat": -24.0, "lon": 126.0, "radius": 0.64, "uplift": 0.074},
+	{"lat": 54.0, "lon": -28.0, "radius": 0.58, "uplift": 0.070},
+]
+
 const MAP_SEED = 42077
 const PLANET_SUBDIVISIONS = 3
 const FAULT_ITERATIONS = 110
 const FAULT_SHARPNESS = 42.0
 const FAULT_STRENGTH = 0.010
 const SEA_LEVEL = 1.0
+const CONTINENT_LAND_RADIUS = 0.78
+const CONTINENT_LAND_UPLIFT = 0.085
 const COUNTRY_LAND_RADIUS = 0.38
 const COUNTRY_LAND_UPLIFT = 0.078
 const FOREST_MAX_INSTANCES = 220
@@ -121,6 +131,7 @@ func _generate_stylized_planet(seed_value: int) -> Dictionary:
 			var sigmoid = 1.0 / (1.0 + exp(-dot * FAULT_SHARPNESS)) - 0.5
 			vertices[i] = vertices[i] + normal * sigmoid * FAULT_STRENGTH
 
+	_raise_continent_regions(vertices)
 	_raise_country_regions(vertices)
 
 	var packed_vertices = PackedVector3Array()
@@ -135,7 +146,8 @@ func _generate_stylized_planet(seed_value: int) -> Dictionary:
 		var c: Vector3 = vertices[face[2]]
 		var normal = -((b - a).normalized().cross((c - a).normalized())).normalized()
 		var avg_height = (a.length() + b.length() + c.length()) / 3.0
-		var color = _biome_color(avg_height)
+		var max_height = max(a.length(), max(b.length(), c.length()))
+		var color = _biome_color(max(avg_height, max_height - 0.018))
 
 		packed_vertices.push_back(a)
 		packed_vertices.push_back(b)
@@ -199,6 +211,28 @@ func _raise_country_regions(vertices: Array) -> void:
 		if uplift > 0.0:
 			var current_height = (vertices[i] as Vector3).length()
 			vertices[i] = normal * max(current_height + uplift, SEA_LEVEL + uplift * 0.85)
+
+func _raise_continent_regions(vertices: Array) -> void:
+	var anchors: Array = []
+	for anchor in CONTINENT_ANCHORS:
+		anchors.append({
+			"dir": _lat_lon_to_vec3(anchor["lat"], anchor["lon"], 1.0).normalized(),
+			"radius": anchor.get("radius", CONTINENT_LAND_RADIUS),
+			"uplift": anchor.get("uplift", CONTINENT_LAND_UPLIFT),
+		})
+
+	for i in range(vertices.size()):
+		var normal = (vertices[i] as Vector3).normalized()
+		var uplift = 0.0
+		for anchor in anchors:
+			var distance = normal.distance_to(anchor["dir"])
+			var radius = float(anchor["radius"])
+			if distance < radius:
+				var influence = 1.0 - distance / radius
+				uplift = max(uplift, influence * influence * float(anchor["uplift"]))
+		if uplift > 0.0:
+			var current_height = (vertices[i] as Vector3).length()
+			vertices[i] = normal * max(current_height + uplift, SEA_LEVEL + uplift * 0.72)
 
 func _build_ocean() -> void:
 	ocean_mesh = MeshInstance3D.new()
