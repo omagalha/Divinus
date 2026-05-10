@@ -13,6 +13,8 @@ var economy: float          # 0-100
 var technology: float       # 0-100
 var military: float         # 0-100
 var stability: float        # 0-100
+var faith: float            # 0-100
+var aggression: float       # 0-100
 var ideology: String        # "democracy", "autocracy", "theocracy", "anarchy"
 var relations: Dictionary   # { country_id: valor -100..100 }
 var at_war_with: Array      # [ country_id, ... ]
@@ -38,6 +40,8 @@ func setup(data: Dictionary) -> void:
 	technology   = data.get("technology", 30.0)
 	military     = data.get("military", 30.0)
 	stability    = data.get("stability", 60.0)
+	faith        = data.get("faith", 35.0)
+	aggression   = data.get("aggression", 35.0)
 	ideology     = data.get("ideology", "democracy")
 	era          = data.get("era", 0)
 	relations    = data.get("relations", {})
@@ -83,6 +87,8 @@ func _store_previous_stats() -> void:
 		"technology": technology,
 		"military": military,
 		"stability": stability,
+		"faith": faith,
+		"aggression": aggression,
 	}
 
 func _empty_trend() -> Dictionary:
@@ -254,6 +260,8 @@ func to_dict() -> Dictionary:
 		"technology": snappedf(technology, 0.1),
 		"military": snappedf(military, 0.1),
 		"stability": snappedf(stability, 0.1),
+		"faith": snappedf(faith, 0.1),
+		"aggression": snappedf(aggression, 0.1),
 		"ideology": ideology,
 		"era": era,
 		"era_name": get_era_name(),

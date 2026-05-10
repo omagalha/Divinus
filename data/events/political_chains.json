@@ -1,0 +1,52 @@
+[
+  {
+    "id":"ditadura","title":"Ascensão da Ditadura","scope":"country","weight":5,
+    "start_conditions":{"min_era":2,"min_stability":60,"min_military":50},
+    "steps":[
+      {"id":"dit_eleito","delay":1,"effects":{"stability":20,"economy":10},"severity":"low","news":"🗳️ Líder carismático vence eleição em {country}. O povo aplaude {leader}."},
+      {"id":"dit_imprensa","delay":4,"effects":{"stability":-15,"military":10},"severity":"high","news":"📰 Imprensa livre começa a ser silenciada em {country}. Jornalistas são presos."},
+      {"id":"dit_cancelamento","delay":2,"effects":{"ideology":"autocracy","stability":-25,"military":20},"severity":"critical","news":"🚨 Eleições canceladas em {country}. Oposição é ilegalizada."},
+      {"id":"dit_consolidada","delay":1,"effects":{"technology":-5,"economy":-5,"military":40},"severity":"critical","news":"🛡️ Ditadura consolidada em {country}. Toda resistência interna é esmagada."}
+    ]
+  },
+  {
+    "id":"propaganda","title":"Guerra de Propaganda","scope":"country","weight":5,
+    "start_conditions":{"min_era":2,"max_stability":55},
+    "steps":[
+      {"id":"prop_narrativa","delay":1,"effects":{"stability":-10},"severity":"medium","news":"📡 Batalha narrativa atinge {country}. Notícias falsas radicalizam a população."},
+      {"id":"prop_espionagem","delay":5,"effects":{"stability":-25},"severity":"high","news":"🕵️ Espionagem ideológica descoberta em {country}. Agentes estrangeiros infiltrados."},
+      {"id":"prop_separatismo","delay":2,"effects":{"stability":-30,"military":15},"severity":"critical","news":"🚩 Movimentos separatistas surgem em {country}. Regiões pedem anexação ao vizinho."},
+      {"id":"prop_fragmenta","delay":1,"effects":{"stability":-50,"declare_war_random":true},"severity":"critical","news":"💥 {country} se fragmenta em blocos rivais alinhados a potências opostas."}
+    ]
+  },
+  {
+    "id":"corrupcao","title":"Captura do Estado","scope":"country","weight":5,
+    "start_conditions":{"min_era":2,"max_economy":60,"max_stability":65},
+    "steps":[
+      {"id":"corr_escandalos","delay":1,"effects":{"economy":-5},"severity":"low","news":"💼 Escândalos de corrupção são ignorados em {country}. Ninguém é punido."},
+      {"id":"corr_mafia","delay":6,"effects":{"economy":-30,"stability":-20},"severity":"high","news":"🕴️ Máfia política controla judiciário, polícia e imprensa de {country}."},
+      {"id":"corr_falencia","delay":3,"effects":{"economy":-40,"population_percent":-0.08,"stability":-35},"severity":"critical","news":"🏚️ Falência do estado em {country}. Serviços básicos colapsam."},
+      {"id":"corr_revolucao","delay":1,"effects":{"ideology":"anarchy","stability":-50,"economy":-60},"severity":"critical","news":"🔥 Revolução de fúria popular incendeia {country}. O povo queima tudo."}
+    ]
+  },
+  {
+    "id":"populismo","title":"Onda Populista","scope":"country","weight":5,
+    "start_conditions":{"min_era":3,"max_stability":55,"max_economy":55},
+    "steps":[
+      {"id":"pop_anti_sistema","delay":1,"effects":{"stability":10},"severity":"low","news":"📣 Movimento anti-sistema explode em {country}. Candidato promete destruir a elite."},
+      {"id":"pop_governo","delay":3,"effects":{"technology":-20,"military":10},"severity":"high","news":"🏛️ Populista assume {country}. Decretos ignoram a constituição."},
+      {"id":"pop_inimigo","delay":4,"effects":{"military":25,"stability":10},"severity":"high","news":"🎯 {leader} declara um vizinho como ameaça existencial a {country}."},
+      {"id":"pop_guerra","delay":2,"effects":{"declare_war_random":true,"economy":-40},"severity":"critical","news":"⚔️ Guerra nacionalista: {country} busca vitória militar para salvar o regime."}
+    ]
+  },
+  {
+    "id":"choque_civilizacoes","title":"Choque de Civilizações","scope":"country","weight":3,
+    "start_conditions":{"min_era":3,"min_military":60},
+    "steps":[
+      {"id":"choque_blocos","delay":1,"effects":{"stability":-10},"severity":"medium","news":"🌐 Dois blocos ideológicos se formam ao redor de {country}."},
+      {"id":"choque_proxy","delay":5,"effects":{"declare_war_random":true,"stability":-20},"severity":"critical","news":"🔥 Guerras por procuração eclodem. {country} financia facções instáveis."},
+      {"id":"choque_incidente","delay":5,"effects":{"stability":-40,"military":30},"severity":"critical","news":"🚨 Incidente militar envolvendo {country} escapa ao controle."},
+      {"id":"choque_guerra","delay":2,"effects":{"population_percent":-0.30,"economy":-60,"era_regress":true},"severity":"critical","news":"⚔️ Guerra de civilizações atinge {country}. O conflito que todos temiam começou."}
+    ]
+  }
+]

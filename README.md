@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🌍 DIVINUS — Guia de Início Rápido
 
 Você é uma entidade acima da humanidade. Cada decisão sua altera civilizações.
@@ -178,4 +178,3 @@ Pressione **F5**. O globo vai aparecer, girar sozinho e os países vão pulsar.
 =======
 # Divinus
 Simulador procedural de civilizações onde a humanidade evolui de tribos primitivas até sociedades futuristas sob influência divina.
->>>>>>> 16b8ec0573c46a81a4b961e4e55b80d0436ec75d

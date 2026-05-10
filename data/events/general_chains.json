@@ -1,0 +1,62 @@
+[
+  {
+    "id":"fome","title":"Fome em Cadeia","scope":"country","weight":5,
+    "start_conditions":{"max_stability":60,"max_economy":50},
+    "steps":[
+      {"id":"fome_seca","delay":1,"effects":{"economy":-10},"severity":"medium","news":"🌾 Seca prolongada em {country}. Colheitas murcham e estoques diminuem."},
+      {"id":"fome_escassez","delay":2,"effects":{"economy":-20,"stability":-15},"severity":"high","news":"🍞 Mercados vazios em {country}. Saques começam enquanto {leader} perde legitimidade."},
+      {"id":"fome_massa","delay":2,"effects":{"population_percent":-0.10,"stability":-40},"severity":"critical","news":"💀 Fome em massa em {country}. Crianças morrem nas ruas e o estado cambaleia."},
+      {"id":"fome_colapso","delay":1,"effects":{"stability":-50,"ideology":"anarchy"},"severity":"critical","news":"🔥 Colapso do estado em {country}. Governo cai e facções armadas tomam o controle."}
+    ]
+  },
+  {
+    "id":"revolucao","title":"Revolução Popular","scope":"country","weight":5,
+    "start_conditions":{"min_era":1,"max_stability":40,"max_economy":45},
+    "steps":[
+      {"id":"rev_desigualdade","delay":1,"effects":{"stability":-5},"severity":"low","news":"✊ Discursos radicais ganham praças em {country}. A desigualdade vira pólvora."},
+      {"id":"rev_greve","delay":3,"effects":{"economy":-25,"stability":-20},"severity":"high","news":"🏭 Greve geral paralisa {country}. Economia congela e {leader} perde margem."},
+      {"id":"rev_levante","delay":2,"effects":{"stability":-30,"military":15},"severity":"critical","news":"🔥 Levante armado em {country}. Facção radical toma prédios públicos."},
+      {"id":"rev_consumada","delay":1,"effects":{"economy":-40,"military":20,"stability":-40,"ideology":"anarchy"},"severity":"critical","news":"🚩 Revolução consumada em {country}. O regime cai e uma nova ordem radical assume."}
+    ]
+  },
+  {
+    "id":"ia_ascensao","title":"Ascensão da IA","scope":"country","weight":4,
+    "start_conditions":{"min_era":3,"min_technology":70},
+    "steps":[
+      {"id":"ia_produtividade","delay":1,"effects":{"economy":30,"technology":20},"severity":"low","news":"🤖 IAs de {country} superam humanos em produtividade. O PIB explode."},
+      {"id":"ia_desemprego","delay":3,"effects":{"stability":-30,"economy":-15},"severity":"high","news":"🤖 Desemprego estrutural em {country}. Profissões inteiras desaparecem."},
+      {"id":"ia_infra","delay":2,"effects":{"stability":-20,"technology":40},"severity":"critical","news":"⚠️ IA controla energia, água e comunicações em {country}. Dependência total."},
+      {"id":"ia_geopolitica","delay":1,"effects":{"stability":-60,"declare_war_random":true},"severity":"critical","news":"🚨 Singularidade em {country}: a IA toma decisões geopolíticas e inicia uma guerra."}
+    ]
+  },
+  {
+    "id":"guerra_recursos","title":"Guerra de Recursos","scope":"country","weight":5,
+    "start_conditions":{"min_era":2,"min_military":55,"max_economy":50},
+    "steps":[
+      {"id":"rec_tensao","delay":1,"effects":{"stability":-10},"severity":"medium","news":"⛏️ Tensão por território rico em minério envolve {country}."},
+      {"id":"rec_fronteira","delay":3,"effects":{"stability":-20,"military":10},"severity":"high","news":"🚧 Incidente de fronteira mata soldados de {country}. A guerra se aproxima."},
+      {"id":"rec_guerra","delay":1,"effects":{"declare_war_random":true,"economy":-30},"severity":"critical","news":"⚔️ {country} entra em guerra por recursos. Cidades são bombardeadas."},
+      {"id":"rec_exaustao","delay":4,"effects":{"economy":-30,"population_percent":-0.15,"era_regress":true},"severity":"critical","news":"🩸 A guerra de recursos deixa {country} exausto. Não há vencedores reais."}
+    ]
+  },
+  {
+    "id":"fanatismo","title":"Fanatismo Religioso","scope":"country","weight":4,
+    "start_conditions":{"min_faith":60,"max_stability":55},
+    "steps":[
+      {"id":"fan_profeta","delay":1,"effects":{"faith":15,"stability":-5},"severity":"low","news":"🔮 Profeta carismático surge em {country}, prometendo salvação."},
+      {"id":"fan_radicaliza","delay":4,"effects":{"stability":-20},"severity":"high","news":"🔥 Movimento religioso se radicaliza em {country}. Templos são incendiados."},
+      {"id":"fan_teocracia","delay":2,"effects":{"ideology":"theocracy","technology":-30,"faith":30},"severity":"critical","news":"⛪ Teocracia estabelecida à força em {country}. Lei religiosa é imposta."},
+      {"id":"fan_jihad","delay":3,"effects":{"declare_war_random":true,"military":20},"severity":"critical","news":"⚔️ {country} declara guerra sagrada contra seus vizinhos."}
+    ]
+  },
+  {
+    "id":"clima","title":"Colapso Climático","scope":"country","weight":3,
+    "start_conditions":{"min_era":3,"max_technology":60},
+    "steps":[
+      {"id":"clima_alerta","delay":1,"effects":{"economy":-5},"severity":"low","news":"🌡️ Anomalias climáticas crescem em {country}. Cientistas alertam; políticos ignoram."},
+      {"id":"clima_costas","delay":5,"effects":{"population_percent":-0.15,"economy":-25,"stability":-20},"severity":"critical","news":"🌊 Cidades costeiras de {country} inundam. Refugiados climáticos tomam estradas."},
+      {"id":"clima_agua","delay":4,"effects":{"declare_war_random":true,"economy":-40},"severity":"critical","news":"💧 Guerras por água e comida começam a partir de {country}."},
+      {"id":"clima_extincao","delay":5,"effects":{"population_percent":-0.60,"stability":-80},"severity":"critical","news":"☠️ Extinção em massa atinge {country}. Cadeias alimentares quebram."}
+    ]
+  }
+]

@@ -1,34 +1,31 @@
-<<<<<<< HEAD
-# Godot — arquivos gerados automaticamente (não precisam ir pro Git)
+# Godot generated files
 .godot/
+.import/
 *.uid
+*.tmp
+.nomedia
 
-# Exportações
+# Godot exports and credentials
 export/
+export.cfg
+export_credentials.cfg
 *.apk
 *.aab
 *.ipa
 
-# Sistema operacional
-.DS_Store
-Thumbs.db
-desktop.ini
-=======
-# Godot 4+ specific ignores
-.godot/
-.nomedia
-
-# Godot-specific ignores
-.import/
-export.cfg
-export_credentials.cfg
-*.tmp
-
-# Imported translations (automatically generated from CSV files)
+# Imported translations generated from CSV files
 *.translation
 
-# Mono-specific ignores
+# Mono/C# generated files
 .mono/
 data_*/
 mono_crash.*.json
->>>>>>> 16b8ec0573c46a81a4b961e4e55b80d0436ec75d
+
+# Local temporary analysis/import folders
+tmp_external/
+tmp_zip_import/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
