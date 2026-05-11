@@ -24,6 +24,11 @@ var leader
 var event_history: Array = []
 var war_history: Array = []
 var trend: Dictionary = {}
+var visual_stage: int = 0
+var city_level: int = 0
+var pollution: float = 0.0
+var energy_type: String = "organic"
+var culture_style: String = "balanced"
 var _previous_stats: Dictionary = {}
 
 func get_leader():
@@ -51,6 +56,7 @@ func setup(data: Dictionary) -> void:
 	leader.setup_for_country(country_name, ideology, id)
 	_store_previous_stats()
 	trend = _empty_trend()
+	update_visual_state()
 
 func begin_turn_snapshot() -> void:
 	_store_previous_stats()
@@ -63,6 +69,31 @@ func update_trends() -> void:
 		"military": snappedf(military - _previous_stats.get("military", military), 0.1),
 		"stability": snappedf(stability - _previous_stats.get("stability", stability), 0.1),
 	}
+	update_visual_state()
+
+func update_visual_state() -> void:
+	visual_stage = era
+	city_level = clampi(int((population * 0.45 + economy * 0.35 + technology * 0.20) / 18.0), 0, 10)
+	pollution = clampf((economy * 0.45 + technology * 0.35 + military * 0.20) - stability * 0.55, 0.0, 100.0)
+
+	if era <= 1:
+		energy_type = "organic"
+	elif technology < 45:
+		energy_type = "wood_coal"
+	elif technology < 75:
+		energy_type = "industrial"
+	else:
+		energy_type = "clean" if stability > 55 else "dirty_hightech"
+
+	match ideology:
+		"theocracy":
+			culture_style = "sacred"
+		"autocracy":
+			culture_style = "monumental"
+		"anarchy":
+			culture_style = "chaotic"
+		_:
+			culture_style = "balanced"
 
 func record_event(year: int, event: Dictionary) -> void:
 	var entry = {
@@ -222,9 +253,11 @@ func apply_power(power_id: String) -> String:
 			stability = min(100, stability + 10)
 			return "✨ " + country_name + " foi abençoado. Economia e estabilidade crescem."
 		"economic_crisis":
-			economy   = max(0, economy - 25)
-			stability = max(0, stability - 15)
-			return "📉 Crise econômica instalada em " + country_name + "."
+			economy    = max(0, economy - 25)
+			stability  = max(0, stability - 15)
+			military   = max(0, military - 12)
+			aggression = max(0, aggression - 15)
+			return "📉 Crise econômica instalada em " + country_name + ". Exército perde financiamento."
 		"tech_boost":
 			technology = min(100, technology + 20)
 			return "🔬 Iluminação tecnológica em " + country_name + "."
@@ -272,4 +305,11 @@ func to_dict() -> Dictionary:
 		"trend": trend,
 		"event_history": event_history,
 		"war_history": war_history,
+		"visual": {
+			"stage": visual_stage,
+			"city_level": city_level,
+			"pollution": snappedf(pollution, 0.1),
+			"energy_type": energy_type,
+			"culture_style": culture_style,
+		},
 	}

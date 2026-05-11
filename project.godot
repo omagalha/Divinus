@@ -37,7 +37,6 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=1600
 window/size/viewport_height=900
-window/size/resizable=true
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/handheld/orientation=1

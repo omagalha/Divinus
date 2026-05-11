@@ -48,5 +48,20 @@
       {"id":"choque_incidente","delay":5,"effects":{"stability":-40,"military":30},"severity":"critical","news":"🚨 Incidente militar envolvendo {country} escapa ao controle."},
       {"id":"choque_guerra","delay":2,"effects":{"population_percent":-0.30,"economy":-60,"era_regress":true},"severity":"critical","news":"⚔️ Guerra de civilizações atinge {country}. O conflito que todos temiam começou."}
     ]
+  },
+  {
+    "id":"crise_politica","title":"Crise Política Nacional","scope":"country","weight":6,
+    "start_conditions":{"min_era":2,"max_stability":45},
+    "steps":[
+      {"id":"crise_descontentamento","delay":1,"pressure_delta":10,"effects":{"stability":-8,"economy":-5},"severity":"medium","news":"😤 Descontentamento cresce em {country}. {leader} ignora as queixas populares por tempo demais."},
+      {"id":"crise_protestos","delay":3,"pressure_delta":20,"effects":{"stability":-12,"economy":-8},"severity":"high","news":"✊ Protestos tomam as ruas de {country}. {leader} declara estado de alerta — o exército patrulha a capital."},
+      {"id":"crise_ruptura","delay":2,"pressure_delta":25,"effects":{"stability":-18,"economy":-10,"military":8},"severity":"critical","news":"🏛️ Ruptura institucional em {country}. O parlamento é cercado — {leader} perdeu o controle das ruas."}
+    ],
+    "endings":[
+      {"id":"crise_reforma","condition":{"max_pressure":40,"leader_trait":"diplomatic"},"effects":{"stability":25,"economy":15},"severity":"high","news":"🕊️ Reforma pacífica em {country}. {leader} surpreende a nação — nova constituição nasce do diálogo."},
+      {"id":"crise_golpe","condition":{"min_pressure":50,"leader_trait":"aggressive"},"effects":{"stability":-10,"military":20,"ideology":"autocracy"},"severity":"critical","news":"🎖️ Golpe militar em {country}. {leader} dissolve o governo — tanques dominam a capital."},
+      {"id":"crise_repressao","condition":{"min_pressure":30,"leader_trait":"aggressive"},"effects":{"stability":-15,"military":12,"economy":-8},"severity":"critical","news":"🛡️ Repressão brutal em {country}. {leader} silencia a oposição com força total — dissidentes desaparecem."},
+      {"id":"crise_revolucao","condition":{"min_pressure":55},"effects":{"stability":-30,"economy":-20,"ideology":"anarchy"},"severity":"critical","news":"🔥 Revolução popular varre {country}. {leader} foge — o povo toma o poder entre chamas e barricadas."}
+    ]
   }
 ]

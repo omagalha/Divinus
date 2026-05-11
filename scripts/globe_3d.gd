@@ -1,5 +1,7 @@
 extends Node3D
 
+const CivilizationLayerScript = preload("res://scripts/civilization_layer.gd")
+
 # ─────────────────────────────────────────────
 #  Globe3D — globo 3D interativo
 #  Attach na cena Globe3D.tscn
@@ -30,11 +32,9 @@ const COUNTRY_POSITIONS = {
 }
 
 const CONTINENT_ANCHORS = [
-	{"lat": 48.0, "lon": 10.0, "radius": 0.74, "uplift": 0.078},
-	{"lat": 18.0, "lon": 58.0, "radius": 0.82, "uplift": 0.086},
-	{"lat": -18.0, "lon": -62.0, "radius": 0.86, "uplift": 0.088},
-	{"lat": -24.0, "lon": 126.0, "radius": 0.64, "uplift": 0.074},
-	{"lat": 54.0, "lon": -28.0, "radius": 0.58, "uplift": 0.070},
+	{"lat": 5.0, "lon": -72.0, "radius": 0.98, "uplift": 0.095},
+	{"lat": 42.0, "lon": -48.0, "radius": 0.52, "uplift": 0.070},
+	{"lat": -37.0, "lon": -58.0, "radius": 0.48, "uplift": 0.070},
 ]
 
 const MAP_SEED = 42077
@@ -42,24 +42,26 @@ const PLANET_SUBDIVISIONS = 3
 const FAULT_ITERATIONS = 110
 const FAULT_SHARPNESS = 42.0
 const FAULT_STRENGTH = 0.010
-const SEA_LEVEL = 1.0
-const CONTINENT_LAND_RADIUS = 0.78
-const CONTINENT_LAND_UPLIFT = 0.085
-const COUNTRY_LAND_RADIUS = 0.38
-const COUNTRY_LAND_UPLIFT = 0.078
+const SEA_LEVEL = 0.972
+const CONTINENT_LAND_RADIUS = 0.82
+const CONTINENT_LAND_UPLIFT = 0.100
+const COUNTRY_LAND_RADIUS = 0.45
+const COUNTRY_LAND_UPLIFT = 0.100
 const FOREST_MAX_INSTANCES = 220
 const MOUNTAIN_MAX_INSTANCES = 90
 const CLOUD_LAYER_RADIUS = 1.075
 const ATMOSPHERE_RADIUS = 1.105
 
 var globe_mesh: MeshInstance3D
-var ocean_mesh: MeshInstance3D
 var atmosphere_mesh: MeshInstance3D
 var cloud_mesh: MeshInstance3D
 var forest_multimesh: MultiMeshInstance3D
 var mountain_multimesh: MultiMeshInstance3D
 var city_lights: Dictionary = {}
 var markers: Dictionary = {}       # country_id -> MeshInstance3D
+var civilization_layers: Dictionary = {}
+var orbit_layer: Node3D
+var orbiters: Array[Node3D] = []
 var war_lines: Array = []          # linhas de guerra ativas
 var selected_country_id: int = -1
 var _dragging: bool = false
@@ -79,19 +81,24 @@ func _ready() -> void:
 	_build_clouds()
 	_build_stars()
 	_build_markers()
+	init_civilization_layers()
+	_build_orbit_layer()
 	_setup_lights()
+	if camera:
+		camera.position = Vector3(0.0, 0.0, _zoom)
+		camera.look_at(Vector3.ZERO)
 
 func _setup_environment() -> void:
 	var env = Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color(0.02, 0.02, 0.05)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.1, 0.12, 0.2)
-	env.ambient_light_energy = 0.4
+	env.ambient_light_color = Color(0.22, 0.26, 0.34)
+	env.ambient_light_energy = 0.82
 	env.glow_enabled = true
-	env.glow_intensity = 0.42
-	env.glow_strength = 0.72
-	env.glow_bloom = 0.18
+	env.glow_intensity = 0.30
+	env.glow_strength = 0.44
+	env.glow_bloom = 0.10
 	var world_env = WorldEnvironment.new()
 	world_env.environment = env
 	add_child(world_env)
@@ -107,11 +114,11 @@ func _build_globe() -> void:
 	var mat = StandardMaterial3D.new()
 	mat.vertex_color_use_as_albedo = true
 	mat.metallic = 0.0
-	mat.roughness = 0.82
+	mat.roughness = 0.78
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	globe_mesh.material_override = mat
 	add_child(globe_mesh)
 
-	_build_ocean()
 	_build_forests(planet_data["trees"])
 	_build_mountains(planet_data["mountains"])
 
@@ -133,6 +140,7 @@ func _generate_stylized_planet(seed_value: int) -> Dictionary:
 
 	_raise_continent_regions(vertices)
 	_raise_country_regions(vertices)
+	_normalize_planet_heights(vertices)
 
 	var packed_vertices = PackedVector3Array()
 	var packed_normals = PackedVector3Array()
@@ -144,10 +152,18 @@ func _generate_stylized_planet(seed_value: int) -> Dictionary:
 		var a: Vector3 = vertices[face[0]]
 		var b: Vector3 = vertices[face[1]]
 		var c: Vector3 = vertices[face[2]]
-		var normal = -((b - a).normalized().cross((c - a).normalized())).normalized()
+		var normal = ((b - a).cross(c - a)).normalized()
+		var face_dir = ((a + b + c) / 3.0).normalized()
+		if normal.dot(face_dir) < 0.0:
+			var temp = b
+			b = c
+			c = temp
+			normal = ((b - a).cross(c - a)).normalized()
 		var avg_height = (a.length() + b.length() + c.length()) / 3.0
 		var max_height = max(a.length(), max(b.length(), c.length()))
-		var color = _biome_color(max(avg_height, max_height - 0.018))
+		var terrain_height = max(avg_height, max_height - 0.018)
+		var is_land = terrain_height >= SEA_LEVEL
+		var color = _biome_color(terrain_height)
 
 		packed_vertices.push_back(a)
 		packed_vertices.push_back(b)
@@ -160,14 +176,14 @@ func _generate_stylized_planet(seed_value: int) -> Dictionary:
 		packed_colors.push_back(color)
 
 		var center = (a + b + c) / 3.0
-		if avg_height > 1.015 and avg_height < 1.055 and trees.size() < FOREST_MAX_INSTANCES:
-			var chance = 1.0 / (1.0 + pow(abs(avg_height - 1.035) * 95.0, 2.0))
-			if rng.randf() < chance * 0.25:
-				trees.append({"pos": center.normalized() * (avg_height + 0.015), "normal": normal})
+		if is_land and avg_height < 1.055 and trees.size() < FOREST_MAX_INSTANCES:
+			var chance = 1.0 / (1.0 + pow(abs(avg_height - 1.035) * 10.0, 2.0) * 10000.0)
+			if rng.randf() < chance * 0.80:
+				trees.append({"pos": center.normalized() * (center.length() + 0.015), "normal": normal})
 
-		if avg_height >= 1.075 and mountains.size() < MOUNTAIN_MAX_INSTANCES:
-			if rng.randf() < 0.18:
-				mountains.append({"pos": center.normalized() * (avg_height + 0.018), "normal": normal})
+		if avg_height >= 1.065 and mountains.size() < MOUNTAIN_MAX_INSTANCES:
+			if rng.randf() < 0.20:
+				mountains.append({"pos": center.normalized() * (center.length() + 0.018), "normal": normal})
 
 	var arrays = []
 	arrays.resize(Mesh.ARRAY_MAX)
@@ -179,20 +195,35 @@ func _generate_stylized_planet(seed_value: int) -> Dictionary:
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	return {"mesh": mesh, "trees": trees, "mountains": mountains}
 
+func _normalize_planet_heights(vertices: Array) -> void:
+	var min_height = INF
+	var max_height = -INF
+	for vertex in vertices:
+		var height = (vertex as Vector3).length()
+		min_height = min(min_height, height)
+		max_height = max(max_height, height)
+
+	var height_range = max(0.001, max_height - min_height)
+	for i in range(vertices.size()):
+		var dir = (vertices[i] as Vector3).normalized()
+		var normalized_height = (((vertices[i] as Vector3).length() - min_height) / height_range)
+		var radius = lerpf(0.925, 1.115, normalized_height)
+		vertices[i] = dir * radius
+
 func _biome_color(height: float) -> Color:
-	if height < 0.965:
-		return Color(0.03, 0.13, 0.28)
+	if height < 0.955:
+		return Color(0.05, 0.24, 0.52)   # oceano profundo
 	if height < SEA_LEVEL:
-		return Color(0.05, 0.20, 0.38)
-	if height < 1.012:
-		return Color(0.78, 0.68, 0.42)
-	if height < 1.045:
-		return Color(0.18, 0.48, 0.27)
-	if height < 1.073:
-		return Color(0.25, 0.42, 0.22)
-	if height < 1.095:
-		return Color(0.42, 0.38, 0.32)
-	return Color(0.88, 0.90, 0.84)
+		return Color(0.09, 0.40, 0.70)   # oceano raso
+	if height < 1.008:
+		return Color(0.91, 0.83, 0.57)   # costa/areia
+	if height < 1.048:
+		return Color(0.38, 0.74, 0.44)   # planícies
+	if height < 1.078:
+		return Color(0.30, 0.58, 0.32)   # colinas
+	if height < 1.098:
+		return Color(0.72, 0.68, 0.60)   # montanhas
+	return Color(0.94, 0.95, 0.92)       # neve
 
 func _raise_country_regions(vertices: Array) -> void:
 	var country_dirs: Array = []
@@ -234,35 +265,16 @@ func _raise_continent_regions(vertices: Array) -> void:
 			var current_height = (vertices[i] as Vector3).length()
 			vertices[i] = normal * max(current_height + uplift, SEA_LEVEL + uplift * 0.72)
 
-func _build_ocean() -> void:
-	ocean_mesh = MeshInstance3D.new()
-	var sphere = SphereMesh.new()
-	sphere.radius = SEA_LEVEL - 0.010
-	sphere.height = (SEA_LEVEL - 0.010) * 2.0
-	sphere.radial_segments = 48
-	sphere.rings = 24
-	ocean_mesh.mesh = sphere
-
-	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.02, 0.20, 0.44, 1.0)
-	mat.roughness = 0.35
-	mat.metallic = 0.0
-	mat.emission_enabled = true
-	mat.emission = Color(0.02, 0.12, 0.28)
-	mat.emission_energy_multiplier = 0.18
-	ocean_mesh.material_override = mat
-	globe_mesh.add_child(ocean_mesh)
-
 func _build_forests(tree_points: Array) -> void:
 	forest_multimesh = MultiMeshInstance3D.new()
 	var mm = MultiMesh.new()
-	mm.mesh = _make_cone_mesh(Color(0.05, 0.30, 0.09), 0.028, 0.075)
+	mm.mesh = _make_cone_mesh(Color(0.08, 0.36, 0.12), 0.020, 0.125)
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.instance_count = tree_points.size()
 	for i in range(tree_points.size()):
 		var item = tree_points[i]
 		var normal: Vector3 = item["normal"]
-		var tree_basis = _basis_from_normal(normal, float(i) * 1.618).scaled(Vector3.ONE * 0.65)
+		var tree_basis = _basis_from_normal(normal, float(i) * 1.618).scaled(Vector3.ONE * 0.86)
 		mm.set_instance_transform(i, Transform3D(tree_basis, item["pos"]))
 	forest_multimesh.multimesh = mm
 	globe_mesh.add_child(forest_multimesh)
@@ -270,7 +282,7 @@ func _build_forests(tree_points: Array) -> void:
 func _build_mountains(mountain_points: Array) -> void:
 	mountain_multimesh = MultiMeshInstance3D.new()
 	var mm = MultiMesh.new()
-	mm.mesh = _make_cone_mesh(Color(0.50, 0.48, 0.43), 0.045, 0.095)
+	mm.mesh = _make_cone_mesh(Color(0.68, 0.66, 0.60), 0.050, 0.120)
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.instance_count = mountain_points.size()
 	for i in range(mountain_points.size()):
@@ -419,13 +431,13 @@ func _build_atmosphere() -> void:
 	atmosphere_mesh.mesh = sphere
 
 	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.20, 0.58, 1.0, 0.055)
+	mat.albedo_color = Color(0.20, 0.58, 1.0, 0.014)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.cull_mode = BaseMaterial3D.CULL_FRONT
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.emission_enabled = true
 	mat.emission = Color(0.10, 0.42, 1.0)
-	mat.emission_energy_multiplier = 0.36
+	mat.emission_energy_multiplier = 0.06
 	atmosphere_mesh.material_override = mat
 	add_child(atmosphere_mesh)
 
@@ -466,7 +478,7 @@ func _make_cloud_band_mesh() -> ArrayMesh:
 			var p2 = _lat_lon_to_vec3(lat + width + wobble0, lon0, CLOUD_LAYER_RADIUS)
 			var p3 = _lat_lon_to_vec3(lat + width + wobble1, lon1, CLOUD_LAYER_RADIUS)
 			var p4 = _lat_lon_to_vec3(lat - width + wobble1, lon1, CLOUD_LAYER_RADIUS)
-			var color = Color(0.92, 0.97, 1.0, rng.randf_range(0.035, 0.085))
+			var color = Color(0.92, 0.97, 1.0, rng.randf_range(0.012, 0.032))
 			_add_colored_triangle(verts, normals, colors, p1, p2, p3, color)
 			_add_colored_triangle(verts, normals, colors, p1, p3, p4, color)
 
@@ -522,14 +534,14 @@ func _build_stars() -> void:
 # ─────────────────────────────────────────────
 func _setup_lights() -> void:
 	var sun = DirectionalLight3D.new()
-	sun.light_energy = 1.8
+	sun.light_energy = 2.05
 	sun.light_color = Color(1.0, 0.95, 0.85)
 	sun.look_at_from_position(Vector3(5, 3, 5), Vector3.ZERO)
 	add_child(sun)
 
 	var ambient = OmniLight3D.new()
-	ambient.light_energy = 0.3
-	ambient.light_color = Color(0.3, 0.4, 0.7)
+	ambient.light_energy = 1.10
+	ambient.light_color = Color(0.42, 0.50, 0.75)
 	ambient.omni_range = 100
 	add_child(ambient)
 
@@ -539,10 +551,83 @@ func _setup_lights() -> void:
 func _build_markers() -> void:
 	for id in COUNTRY_POSITIONS:
 		var pos_data = COUNTRY_POSITIONS[id]
-		var world_pos = _lat_lon_to_vec3(pos_data["lat"], pos_data["lon"], 1.04)
+		var world_pos = _lat_lon_to_vec3(pos_data["lat"], pos_data["lon"], 1.14)
 		var marker = _create_marker(id, world_pos)
 		globe_mesh.add_child(marker)
 		markers[id] = marker
+
+func init_civilization_layers() -> void:
+	for id in markers:
+		if civilization_layers.has(id):
+			continue
+		var marker = markers[id] as Node3D
+		var layer = CivilizationLayerScript.new()
+		layer.setup(id)
+		layer.position = Vector3(0.0, 0.0, -0.090)
+		layer.rotation_degrees.x = -90.0
+		layer.scale = Vector3.ONE * 1.35
+		marker.add_child(layer)
+		civilization_layers[id] = layer
+
+func update_all_civilizations(snapshot: Array) -> void:
+	for data in snapshot:
+		var id = int(data.get("id", -1))
+		var layer = civilization_layers.get(id)
+		if layer:
+			layer.update_civilization(data)
+	_update_orbit_layer(snapshot)
+
+func trigger_war_visuals(country_id_a: int, country_id_b: int) -> void:
+	var layer_a = civilization_layers.get(country_id_a)
+	var layer_b = civilization_layers.get(country_id_b)
+	if layer_a:
+		layer_a.trigger_war_effect()
+	if layer_b:
+		layer_b.trigger_war_effect()
+
+func trigger_power_visual(country_id: int, power_id: String) -> void:
+	var layer = civilization_layers.get(country_id)
+	if layer:
+		layer.trigger_power_effect(power_id)
+
+func _build_orbit_layer() -> void:
+	orbit_layer = Node3D.new()
+	add_child(orbit_layer)
+
+func _update_orbit_layer(snapshot: Array) -> void:
+	var future_score := 0
+	for data in snapshot:
+		if int(data.get("era", 0)) >= 4:
+			future_score += 2
+		elif float(data.get("technology", 0.0)) > 85.0:
+			future_score += 1
+	var desired = clampi(future_score, 0, 8)
+	while orbiters.size() < desired:
+		_add_global_orbiter(orbiters.size())
+	while orbiters.size() > desired:
+		var node = orbiters.pop_back()
+		if is_instance_valid(node):
+			node.queue_free()
+
+func _add_global_orbiter(index: int) -> void:
+	if not orbit_layer:
+		return
+	var orbiter = MeshInstance3D.new()
+	var mesh = BoxMesh.new()
+	mesh.size = Vector3(0.035, 0.010, 0.018)
+	orbiter.mesh = mesh
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(0.70, 0.86, 1.0)
+	mat.emission_enabled = true
+	mat.emission = Color(0.20, 0.72, 1.0)
+	mat.emission_energy_multiplier = 1.2
+	orbiter.material_override = mat
+	orbiter.set_meta("orbit_radius", 1.42 + float(index % 3) * 0.06)
+	orbiter.set_meta("orbit_speed", 0.20 + float(index % 5) * 0.035)
+	orbiter.set_meta("orbit_offset", float(index) / 8.0 * TAU)
+	orbiter.set_meta("orbit_tilt", deg_to_rad(18.0 + float(index % 4) * 13.0))
+	orbit_layer.add_child(orbiter)
+	orbiters.append(orbiter)
 
 func _create_marker(country_id: int, world_pos: Vector3) -> Node3D:
 	var root = Node3D.new()
@@ -673,6 +758,9 @@ func update_country(data: Dictionary) -> void:
 	crisis.visible = crisis_alpha > 0.01
 
 	_update_city_lights(id, era, technology, economy, collapsing)
+	var civ_layer = civilization_layers.get(id)
+	if civ_layer:
+		civ_layer.update_civilization(data)
 
 func select_country(country_id: int) -> void:
 	selected_country_id = country_id
@@ -786,6 +874,7 @@ func draw_war_line(id_a: int, id_b: int) -> void:
 
 	_spawn_impact_flash(pos_a)
 	_spawn_impact_flash(pos_b)
+	trigger_war_visuals(id_a, id_b)
 
 	# Remove a linha após 3 segundos
 	var timer = get_tree().create_timer(3.0)
@@ -918,7 +1007,7 @@ func _process(delta: float) -> void:
 		globe_mesh.rotation.y += 0.15 * delta
 		_rotation_velocity = _rotation_velocity.lerp(Vector2.ZERO, 0.05)
 
-	camera.position.z = lerp(camera.position.z, _zoom, delta * 5.0)
+	camera.position = Vector3(0.0, 0.0, lerp(camera.position.z, _zoom, delta * 5.0))
 
 	if cloud_mesh:
 		cloud_mesh.rotation.y += 0.035 * delta
@@ -926,6 +1015,20 @@ func _process(delta: float) -> void:
 	if atmosphere_mesh:
 		var atmo_pulse = 1.0 + sin(_time * 0.6) * 0.006
 		atmosphere_mesh.scale = Vector3.ONE * atmo_pulse
+
+	if orbit_layer:
+		orbit_layer.rotation.y += delta * 0.08
+		for orbiter in orbiters:
+			if not is_instance_valid(orbiter):
+				continue
+			var radius = float(orbiter.get_meta("orbit_radius", 1.42))
+			var speed = float(orbiter.get_meta("orbit_speed", 0.22))
+			var offset = float(orbiter.get_meta("orbit_offset", 0.0))
+			var tilt = float(orbiter.get_meta("orbit_tilt", 0.3))
+			var angle = _time * speed + offset
+			var pos = Vector3(cos(angle) * radius, sin(angle) * sin(tilt) * radius, sin(angle) * cos(tilt) * radius)
+			orbiter.position = pos
+			orbiter.look_at(Vector3.ZERO)
 
 	# Pulso dos marcadores
 	for id in markers:

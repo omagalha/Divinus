@@ -1,0 +1,26 @@
+{
+  "era": "modern",
+  "source_zip": "city.zip",
+  "source_pack": "Kenney City Kit Commercial 2.1 + Kenney City Kit Industrial 1.0",
+  "license": "Creative Commons Zero (CC0)",
+  "credit": "Kenney / www.kenney.nl",
+  "usage": "Small curated GLB set for CivilizationLayer modern city clusters.",
+  "models": {
+    "city": [
+      "city/commercial/low-detail-building-a.glb",
+      "city/commercial/low-detail-building-b.glb",
+      "city/commercial/low-detail-building-c.glb",
+      "city/commercial/low-detail-building-d.glb",
+      "city/commercial/building-skyscraper-a.glb",
+      "city/commercial/building-skyscraper-b.glb"
+    ],
+    "industrial": [
+      "city/industrial/building-a.glb",
+      "city/industrial/chimney-medium.glb"
+    ],
+    "textures": [
+      "city/commercial/Textures/colormap.png",
+      "city/industrial/Textures/colormap.png"
+    ]
+  }
+}

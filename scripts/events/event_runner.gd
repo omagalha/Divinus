@@ -5,15 +5,21 @@ func can_run(definition: Dictionary, country: Country) -> bool:
 	return _conditions_match(definition.get("conditions", definition.get("start_conditions", {})), country)
 
 func run_event(definition: Dictionary, country: Country, year: int, countries: Array = []) -> Dictionary:
-	_apply_effects(country, definition.get("effects", {}), countries)
-	return {
+	var base = {
 		"year": year,
 		"type": definition.get("id", "event"),
 		"title": definition.get("title", "Evento"),
 		"countries": [country.id],
+		"country_id": country.id,
 		"severity": definition.get("severity", "low"),
 		"desc": _render_news(_pick_news(definition), country),
 	}
+	if definition.has("choices"):
+		base["interactive"] = true
+		base["choices"] = definition["choices"]
+		return base
+	_apply_effects(country, definition.get("effects", {}), countries)
+	return base
 
 func _conditions_match(conditions: Dictionary, country: Country) -> bool:
 	if conditions.has("ideology") and country.ideology != conditions["ideology"]:

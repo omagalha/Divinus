@@ -1,182 +1,461 @@
-# DIVINUS — Contexto Completo do Projeto
+# DIVINUS - Contexto Atual do Projeto
 
-## O que é o Divinus
+## O que e o Divinus
 
-Divinus é um jogo mobile (Android + iOS) desenvolvido em **Godot 4.x** onde o jogador é uma entidade divina que influencia civilizações ao longo da história da humanidade. O mundo evolui sozinho — o jogador não controla diretamente, apenas influencia.
+Divinus e um simulador de civilizacoes feito em **Godot 4.x**, onde o jogador atua como uma entidade divina que observa, influencia e acompanha a evolucao de um mundo vivo.
 
-A grande diferença dos outros jogos: **consequências emergentes**. Cada partida gera histórias únicas que os jogadores vão querer compartilhar ("no meu save o Brasil virou potência e os EUA colapsaram").
+O foco atual nao e mobile. **Mobile fica para depois.** A prioridade agora e montar uma experiencia forte no PC: funcionando, legivel, jogavel e com gameplay emergente.
 
----
+A ideia central do jogo e:
 
-## Visão do jogo
+> O jogador nao controla diretamente o mundo. Ele observa, interfere e lida com as consequencias.
 
-**Loop principal:**
-1. Jogador observa o mundo
-2. Recebe eventos automáticos
-3. Aplica poderes divinos
-4. O mundo reage
-5. Novos problemas surgem
+O Divinus precisa gerar historias que o jogador queira contar:
 
-**Progressão de eras:**
-- Fase 1 — Origem: tribos, fogo, caça, agricultura
-- Fase 2 — Civilizações: cidades, reis, religiões
-- Fase 3 — Nações: países, fronteiras, diplomacia
-- Fase 4 — Modernidade: indústria, tecnologia, IA, nuclear
-- Fase 5 — Futuro: colonização espacial, utopia ou extinção
-
-**Finais de jogo:**
-- 🌟 Utopia Tecnológica
-- 💀 Colapso Civilizacional
-- ⚔️ Guerra Mundial
-- ⏳ Fim da Era (ano 2200)
+- "No meu mundo, um lider agressivo iniciou uma guerra continental."
+- "Uma civilizacao medieval virou potencia tecnologica."
+- "Um pais colapsou depois de uma sequencia de desastres e guerras."
+- "A era moderna iluminou o planeta com cidades."
 
 ---
 
-## Stack técnica
+## Visao de Gameplay
 
-- **Engine:** Godot 4.x (GDScript)
-- **Plataforma alvo:** Android + iOS (portrait, 1080x1920)
-- **Desenvolvimento:** Windows PC, testar no PC primeiro
-- **Versão atual:** v0.1 (MVP funcional)
+### Loop principal
+
+1. O jogador observa o globo.
+2. O mundo evolui sozinho a cada ano.
+3. Noticias mostram eventos importantes.
+4. O jogador escolhe um poder divino.
+5. O poder e aplicado em um pais.
+6. O mundo reage mecanicamente e visualmente.
+7. Novas historias, guerras, colapsos e aliancas surgem.
+
+### Pilar principal
+
+**Divinus e um mundo observavel.**
+
+O jogador deve conseguir olhar para o globo e perceber:
+
+- paises crescendo;
+- paises em guerra;
+- regioes colapsando;
+- civilizacoes avancando de era;
+- luzes surgindo com tecnologia;
+- consequencias visuais dos poderes divinos.
+
+O painel de noticias explica. O globo mostra.
 
 ---
 
-## Estrutura de arquivos atual
+## Stack Tecnica
 
-```
+- **Engine:** Godot 4.x
+- **Linguagem:** GDScript
+- **Plataforma atual de desenvolvimento:** PC
+- **Plataforma futura:** Android/iOS depois que a base de gameplay estiver forte
+- **Cena principal atual:** `res://scenes/main_menu.tscn`
+- **Cena do jogo:** `res://scenes/WorldMap.tscn`
+- **Globo 3D:** `res://scenes/Globe3D.tscn`
+
+---
+
+## Estado Atual do Projeto
+
+### Ja implementado
+
+- Simulador central por turnos.
+- 10 paises ficticios.
+- Economia, tecnologia, militar, estabilidade, fe, agressividade e populacao.
+- Progresso de eras: Tribal, Antiga, Medieval, Moderna, Futura.
+- Poderes divinos com custo.
+- Sistema de guerras.
+- Sistema de aliancas.
+- Lideres com nome e personalidade.
+- Painel de detalhes do pais.
+- Historico/timeline de eventos por pais.
+- Tela inicial com opcoes de cenario.
+- Eventos separados em arquivos JSON.
+- Sistema modular de eventos, cadeias gerais e cadeias politicas.
+- Globo 3D interativo com selecao de pais.
+- Geracao procedural de planeta estilizado.
+- Continentes, oceanos, montanhas e florestas.
+- Atmosfera, nuvens, luzes noturnas e marcadores reativos.
+- Linhas/flashes de guerra no globo.
+- CivilizationLayer inicial por pais, com estruturas low-poly por era.
+- `.gitignore` corrigido.
+
+---
+
+## Estrutura Importante
+
+```text
 Divinus/
-├── project.godot              ← configurado para portrait 1080x1920, mobile renderer
-├── .gitignore
-├── README.md                  ← guia de setup completo
+├── project.godot
+├── divinus_prompt.md
+├── README.md
 ├── data/
-│   └── countries.json         ← 10 países fictícios com atributos e relações
-├── scripts/
-│   ├── country.gd             ← classe Country: atributos, simulação por turno, poderes
-│   ├── world_simulator.gd     ← motor central: avança turnos, gerencia países
-│   ├── event_system.gd        ← 9 tipos de eventos aleatórios
-│   ├── war_system.gd          ← guerras eclodem, causam dano, terminam em paz
-│   ├── god_powers.gd          ← 7 poderes divinos com custos
-│   ├── world_map.gd           ← UI desktop atual (layout horizontal)
-│   ├── globe_3d.gd            ← globo 3D interativo (drag, zoom, marcadores)
-│   └── globe_integration.gd   ← conecta Globe3D com WorldSimulator
-└── scenes/
-    ├── WorldMap.tscn           ← cena principal (já criada e funcionando)
-    └── Globe3D.tscn            ← cena do globo (a ser montada)
+│   ├── countries.json
+│   └── events/
+│       ├── standalone_events.json
+│       ├── general_chains.json
+│       └── political_chains.json
+├── scenes/
+│   ├── main_menu.tscn
+│   ├── WorldMap.tscn
+│   └── Globe3D.tscn
+└── scripts/
+    ├── country.gd
+    ├── leader.gd
+    ├── world_simulator.gd
+    ├── event_system.gd
+    ├── war_system.gd
+    ├── god_powers.gd
+    ├── world_map.gd
+    ├── main_menu.gd
+    ├── globe_3d.gd
+    ├── civilization_layer.gd
+    └── events/
+        ├── event_database.gd
+        ├── event_runner.gd
+        └── chain_system.gd
 ```
 
 ---
 
-## O que já funciona (testado)
+## Sistemas de Gameplay
 
-- ✅ 10 países fictícios simulando por turno
-- ✅ Economia, tecnologia, militar, estabilidade, população evoluindo
-- ✅ Sistema de guerras automático (eclodem, causam baixas, terminam em paz)
-- ✅ 9 eventos aleatórios: pandemia, revolução, boom, desastre, aliança, IA...
-- ✅ 7 poderes divinos: Abençoar, Crise Econômica, Iluminação, Desastre Natural, Paz Divina, Nova Ideologia, Regressão
-- ✅ Progressão de eras (Tribal → Antiga → Medieval → Moderna → Futura)
-- ✅ 3 condições de fim de jogo
-- ✅ UI desktop funcional com feed de notícias
-- ✅ Scripts do globo 3D criados (ainda não montados na cena)
+### Paises
+
+Cada pais possui:
+
+- nome;
+- populacao;
+- economia;
+- tecnologia;
+- militar;
+- estabilidade;
+- fe;
+- agressividade;
+- ideologia;
+- era;
+- relacoes diplomaticas;
+- aliados;
+- guerras ativas;
+- lider;
+- historico de eventos;
+- historico de guerras;
+- tendencia recente.
+
+### Lideres
+
+Cada pais tem um lider com:
+
+- nome gerado;
+- traco dominante;
+- agressividade;
+- diplomacia;
+- isolamento;
+- ambicao.
+
+Os lideres influenciam:
+
+- chance de guerra;
+- chance de paz;
+- relacoes diplomaticas;
+- estabilidade;
+- crescimento militar;
+- eventos narrativos.
+
+Exemplo de direcao desejada:
+
+> "O ditador Kael de Kharuum declarou guerra aos vizinhos pelo terceiro ano seguido."
+
+### Aliancas
+
+Paises podem formar blocos por relacao alta.
+
+Quando um pais entra em guerra, aliados podem ser chamados. Isso cria efeito domino:
+
+- conflito local;
+- chamada de aliado;
+- escalada regional;
+- guerra continental;
+- possivel guerra mundial.
+
+### Poderes Divinos
+
+Poderes atuais:
+
+- Abencoar;
+- Crise Economica;
+- Iluminacao;
+- Desastre Natural;
+- Paz Divina;
+- Nova Ideologia;
+- Regressao.
+
+Fluxo desejado:
+
+1. selecionar pais;
+2. ver ficha/contexto;
+3. escolher poder;
+4. aplicar;
+5. mundo reage visualmente e mecanicamente.
 
 ---
 
-## Países atuais (fictícios)
+## Eventos
 
-| ID | Nome | Era Inicial | Ideologia | Destaques |
-|---|---|---|---|---|
-| 1 | Valdoria | Moderna | Democracia | Equilibrada |
-| 2 | Kharuum | Medieval | Autocracia | Militar forte |
-| 3 | Sylveth | Moderna | Democracia | Tecnologia máxima |
-| 4 | Dorrakan | Moderna | Autocracia | Maior população |
-| 5 | Aeloria | Medieval | Teocracia | Estável |
-| 6 | Vrexmoor | Antiga | Anarquia | Caótica |
-| 7 | Thessomar | Moderna | Democracia | Tecnologia alta |
-| 8 | Korrath | Medieval | Autocracia | Grande população |
-| 9 | Lunaris | Moderna | Democracia | Mais avançada |
-| 10 | Zethara | Medieval | Teocracia | Instável |
+O sistema de eventos deve crescer em arquivos separados para evitar refatoracao gigante no futuro.
 
----
+Estado atual importado:
 
-## Poderes divinos
+- cerca de 50 eventos avulsos;
+- 6 cadeias gerais;
+- 5 cadeias politicas;
+- 11 cadeias no total;
+- 44 etapas;
+- aproximadamente 50 eventos.
 
-| Poder | Custo ⚡ | Efeito |
-|---|---|---|
-| ✨ Abençoar | 2 | +Economia +Estabilidade |
-| 📉 Crise Econômica | 2 | -Economia -Estabilidade |
-| 🔬 Iluminação | 3 | +Tecnologia +20 |
-| 🌋 Desastre Natural | 2 | -População -Estabilidade |
-| ☮️ Paz Divina | 3 | Encerra guerras do país |
-| 📣 Nova Ideologia | 2 | Muda regime político |
-| ⏪ Regressão | 4 | Regride 1 era |
+Arquivos atuais:
 
-Jogador ganha **3 pontos divinos por turno**.
+- `data/events/standalone_events.json`
+- `data/events/general_chains.json`
+- `data/events/political_chains.json`
+
+Scripts responsaveis:
+
+- `scripts/event_system.gd`
+- `scripts/events/event_database.gd`
+- `scripts/events/event_runner.gd`
+- `scripts/events/chain_system.gd`
 
 ---
 
-## Cores por era (globo 3D)
+## Globo 3D
 
-- 🟤 Tribal: `#8b5e3c`
-- 🟡 Antiga: `#d4a843`
-- 🟢 Medieval: `#4a9a6a`
-- 🔵 Moderna: `#3a7fd4`
-- 🟣 Futura: `#b844e0`
+O globo e uma das partes centrais do jogo.
+
+Ele deve ser:
+
+- observavel;
+- bonito;
+- reativo;
+- claro;
+- leve o suficiente para mobile no futuro.
+
+### Geracao procedural atual
+
+A logica foi adaptada para Godot 4 a partir do conceito do projeto:
+
+https://github.com/Bauxitedev/stylized-planet-generator
+
+Adaptacao atual:
+
+- icosphere procedural;
+- deformacao por vetores aleatorios;
+- biomas por altura;
+- oceanos;
+- continentes;
+- montanhas;
+- florestas;
+- massas de terra ao redor dos paises;
+- uso de `ArrayMesh`;
+- uso de `MultiMesh` para elementos repetidos.
+
+### Visual atual
+
+O globo possui:
+
+- planeta procedural;
+- oceano;
+- continentes;
+- montanhas;
+- florestas;
+- atmosfera;
+- nuvens;
+- estrelas;
+- marcadores por pais;
+- luzes noturnas por tecnologia/era;
+- linhas e flashes de guerra;
+- auras de colapso/instabilidade.
+
+### Regra de direcao visual
+
+Cada sistema importante deve deixar uma marca no globo.
+
+- crescimento: marcador maior;
+- guerra: vermelho, pulso, linha, flash;
+- colapso: aura escura;
+- era moderna/futura: luzes noturnas;
+- tecnologia avancada: mais brilho;
+- desastre: efeito temporario futuro;
+- aliancas: linhas suaves futuras;
+- futuro: satelites futuros.
+
+### CivilizationLayer
+
+Cada marcador de pais possui uma camada visual filha:
+
+- Tribal: tendas/fogueira/totens em geometria simples;
+- Antiga: templos, fazendas e piramides;
+- Medieval: castelo, vilas e igrejas;
+- Moderna: predios, fabricas e luz urbana;
+- Futura: megatorre, luz neon e orbitadores.
+
+A camada usa fallback low-poly por codigo, entao funciona mesmo sem PNG/modelos externos.
 
 ---
 
-## Próximos passos planejados
+## Tela Inicial e Cenarios
 
-### Imediato
-- [ ] Montar Globe3D.tscn no Godot (Node3D + Camera3D + globe_3d.gd)
-- [ ] Integrar globo com WorldMap via globe_integration.gd
-- [ ] Testar rotação, zoom e seleção de países no globo
+Ja existe tela inicial com cenarios.
 
-### V0.2
-- [ ] Sistema de líderes com personalidade (ego, agressividade, diplomacia)
-- [ ] Notícias estilo jornal com animação de entrada
-- [ ] Mapa procedural com geração aleatória de continentes
-- [ ] Tela de início com opções de cenário
+Cenarios atuais:
 
-### V0.3
-- [ ] Exportar APK para Android e testar no celular
-- [ ] UI adaptada para toque (portrait mobile)
-- [ ] Sistema de save/load
+- Mundo Padrao;
+- Mundo Fragmentado;
+- Era Dourada;
+- Barril de Polvora.
+
+Os cenarios alteram:
+
+- estabilidade;
+- relacoes diplomaticas;
+- aliancas;
+- militarizacao;
+- economia;
+- pontos divinos iniciais.
+
+---
+
+## Objetivo de Curto Prazo
+
+Prioridade atual:
+
+1. Deixar o globo visualmente legivel.
+2. Melhorar continentes e distribuicao de terra.
+3. Refinar fluxo de selecao de pais e aplicacao de poder.
+4. Melhorar feedback visual dos poderes.
+5. Fortalecer painel de pais.
+6. Fazer guerras e aliancas ficarem mais dramáticas visualmente.
+7. Continuar expandindo eventos modulares.
+
+Mobile fica para depois.
+
+---
+
+## Roadmap
+
+### Agora
+
+- [x] Globo 3D integrado.
+- [x] Lideres com personalidade.
+- [x] Aliancas.
+- [x] Painel de pais.
+- [x] Tela inicial com cenarios.
+- [x] Eventos divididos em arquivos.
+- [x] Globo procedural.
+- [x] Atmosfera e nuvens.
+- [x] Marcadores reativos.
+- [x] CivilizationLayer inicial por pais.
+- [ ] Continentes mais legiveis e bonitos.
+- [ ] Aplicacao de poder com feedback visual especifico.
+- [ ] Linhas de alianca.
+- [ ] Efeitos de desastre, fogo/fumaca e colapso regional.
+
+### Depois
+
+- [ ] Balanceamento de guerras.
+- [ ] Mais eventos e cadeias.
+- [ ] Save/load.
+- [ ] Sons e feedbacks.
+- [ ] Melhorar UI desktop.
+- [ ] Exportar build PC jogavel.
 
 ### Futuro
-- [ ] Integrar IA real para líderes (negociam, mentem, fazem alianças)
-- [ ] Multiplayer: mundos compartilhados
-- [ ] Monetização: skins de mapas, timelines alternativas, assinatura premium
+
+- [ ] Mobile portrait.
+- [ ] Otimizacao mobile.
+- [ ] Satelites na era futura.
+- [ ] Skins de planeta.
+- [ ] Timelines alternativas.
+- [ ] Possivel IA mais avancada para lideres.
 
 ---
 
-## Monetização planejada (sem pay-to-win)
+## Tom do Jogo
 
-- Skins de mapas (cyberpunk, apocalipse, medieval)
-- Timelines alternativas (e se Roma nunca caiu?)
-- Pacotes históricos
-- Assinatura premium
-- Poderes especiais cosméticos
+Divinus deve parecer:
 
----
+- divino;
+- observacional;
+- emergente;
+- dramatico;
+- historico;
+- um pouco cruel;
+- cheio de consequencias.
 
-## Potencial viral
-
-O jogo cria histórias emergentes únicas que os jogadores compartilham:
-- "Na minha partida uma tribo do sul dominou o mundo"
-- "A IA exterminou a humanidade no ano 2150"
-- "O Vrexmoor saiu da anarquia e virou democracia"
-
-Isso gera conteúdo orgânico no TikTok e redes sociais.
+O jogador deve sentir que esta olhando para um pequeno planeta vivo.
 
 ---
 
-## Como me ajudar
+## Como ajudar no projeto
 
-Quando eu pedir ajuda no Divinus, as tarefas mais comuns são:
+Quando trabalhar no Divinus:
 
-1. **Novos scripts GDScript** para funcionalidades novas
-2. **Correção de erros** que aparecem no console do Godot
-3. **Melhorias na UI** (sempre pensando em mobile portrait)
-4. **Balanceamento** dos sistemas de simulação
-5. **Assets e dados** (novos eventos, países, poderes)
+- usar Godot 4.x;
+- manter GDScript simples e legivel;
+- preferir sistemas modulares;
+- evitar arquivos gigantes quando o conteudo for crescer;
+- preservar performance pensando em mobile futuro;
+- testar no PC primeiro;
+- priorizar gameplay e clareza visual;
+- fazer o mundo reagir visualmente sempre que possivel.
 
-Sempre que criar arquivos GDScript, use **Godot 4.x** (não Godot 3). A linguagem é GDScript com tipagem estática quando possível.
+Passo 1: Estabilizar o Planeta
+
+Ajustar proporção de terra/água.
+Clarear continentes e costas.
+Reduzir áreas escuras demais.
+Garantir que rotação, seleção e marcadores funcionem bem.
+Passo 2: Criar Camadas Visuais
+
+Separar no código: terreno, natureza, civilização, guerra, atmosfera e órbita.
+Não precisa refatorar tudo de uma vez.
+Primeiro organizar globe_3d.gd para receber essas camadas.
+Passo 3: Civilização Básica
+
+Tribal/Antiga: fogueiras e aldeias pequenas.
+Medieval: torres/castelos simples.
+Moderna: blocos urbanos e luzes.
+Futura: neon ou pequenos satélites.
+Tudo low-poly, com MultiMesh.
+Passo 4: Reação aos Dados
+
+População alta aumenta densidade visual.
+Tecnologia alta aumenta luzes/neon.
+Estabilidade baixa cria fumaça/escurecimento.
+Guerra cria vermelho, fogo e linhas.
+Passo 5: Feedback dos Poderes
+
+Abençoar: brilho dourado temporário.
+Crise: escurecimento/fumaça.
+Iluminação: pulso azul.
+Desastre: impacto/fumaça.
+Paz: pulso branco/verde.
+Regressão: luzes somem ou reduzem.
+Passo 6: Eventos Globais
+
+Guerra mundial: várias linhas vermelhas e flashes.
+Pandemia: luzes diminuem.
+Era de ouro: aura dourada.
+Colapso climático: nuvens escuras/fogo.
+Passo 7: Polimento
+
+Ajustar cores.
+Ajustar escala dos elementos.
+Melhorar câmera/zoom.
+Remover excesso visual.
+Testar performance.

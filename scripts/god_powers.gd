@@ -63,6 +63,22 @@ const POWERS = [
 		"icon": "⏪",
 		"category": "negative"
 	},
+	{
+		"id": "prophecy",
+		"name": "Profecia",
+		"desc": "Revela as intenções secretas do líder com detalhes proféticos.",
+		"cost": 2,
+		"icon": "🔮",
+		"category": "neutral"
+	},
+	{
+		"id": "sacred_treaty",
+		"name": "Tratado Sagrado",
+		"desc": "Força reconciliação com o maior rival do país. Pode forjar aliança.",
+		"cost": 4,
+		"icon": "📜",
+		"category": "positive"
+	},
 ]
 
 # ─────────────────────────────────────────────
@@ -85,3 +101,38 @@ static func get_all() -> Array:
 # ─────────────────────────────────────────────
 static func get_by_category(category: String) -> Array:
 	return POWERS.filter(func(p): return p["category"] == category)
+
+static func get_by_id(power_id: String) -> Dictionary:
+	for p in POWERS:
+		if p["id"] == power_id:
+			return p
+	return {}
+
+# Retorna os efeitos previstos sem aplicá-los
+# Chaves: "economy", "stability", "technology", "military",
+#         "population_pct" (%), "war_cleared", "ideology_change", "era_regress"
+static func get_preview(power_id: String) -> Dictionary:
+	match power_id:
+		"bless":
+			return {"economy": 15, "stability": 10}
+		"economic_crisis":
+			return {"economy": -25, "stability": -15, "military": -12,
+					"relation_hint": "IA ficará menos agressiva (aggression −15)"}
+		"tech_boost":
+			return {"technology": 20}
+		"natural_disaster":
+			return {"population_pct": -15, "stability": -20, "economy": -15}
+		"force_peace":
+			return {"war_cleared": true, "stability": 20,
+					"relation_hint": "Relações com ex-inimigos +25"}
+		"spread_ideology":
+			return {"ideology_change": true, "stability": -10,
+					"relation_hint": "Alianças com ideologias diferentes serão quebradas"}
+		"regress":
+			return {"era_regress": true, "technology": -20,
+					"relation_hint": "Países vizinhos ficarão hostis (relações −12 a −22)"}
+		"prophecy":
+			return {"relation_hint": "Revela intenções do líder em detalhes. Sem efeito nos stats."}
+		"sacred_treaty":
+			return {"relation_hint": "Reconcilia o maior rival ou inimigo (+45 a +62 relações). Pode forjar aliança."}
+	return {}
